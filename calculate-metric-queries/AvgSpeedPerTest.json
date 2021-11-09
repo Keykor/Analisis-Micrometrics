@@ -1,0 +1,5 @@
+{
+    "name": "AvgSpeedPerTest",
+    "forCollection": "CastWithEvents",
+    "dependsOf": ["TimePerTest"]
+}

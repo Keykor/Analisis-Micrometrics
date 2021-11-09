@@ -1,0 +1,23 @@
+[
+    {
+        '$match': {
+            'values.data.source': 5
+        }
+    }, {
+        '$project': {
+            'type': 'input', 
+            'time': '$values.timestamp', 
+            'text': '$values.data.text'
+        }
+    }, {
+        '$project': {
+            'type': 'input', 
+            'timestamp': '$time', 
+            'data': {
+                'text': '$text'
+            }
+        }
+    }, {
+        '$out': 'Input'
+    }
+]

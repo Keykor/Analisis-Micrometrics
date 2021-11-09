@@ -1,0 +1,117 @@
+[
+    {
+        '$unwind': {
+            'path': '$logs'
+        }
+    }, {
+        '$match': {
+            '$or': [
+                {
+                    'logs.type': 'focus'
+                }, {
+                    'logs.type': 'blur'
+                }
+            ]
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'logs': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$addFields': {
+            'nextLogs': '$logs'
+        }
+    }, {
+        '$project': {
+            'logs': {
+                '$filter': {
+                    'input': '$logs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$ne': [
+                            '$$logs', {
+                                '$arrayElemAt': [
+                                    '$logs', -1
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }, 
+            'nextLogs': {
+                '$filter': {
+                    'input': '$nextLogs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$ne': [
+                            '$$logs', {
+                                '$arrayElemAt': [
+                                    '$logs', 0
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'logs': {
+                '$map': {
+                    'input': {
+                        '$zip': {
+                            'inputs': [
+                                '$logs', '$nextLogs'
+                            ]
+                        }
+                    }, 
+                    'as': 'el', 
+                    'in': {
+                        'a': {
+                            '$arrayElemAt': [
+                                '$$el', 0
+                            ]
+                        }, 
+                        'b': {
+                            '$arrayElemAt': [
+                                '$$el', 1
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        '$unwind': {
+            'path': '$logs'
+        }
+    }, {
+        '$match': {
+            '$and': [
+                {
+                    'logs.a.type': 'focus'
+                }, {
+                    'logs.b.type': 'blur'
+                }
+            ]
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'focuses': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$project': {
+            'totalFocus': {
+                '$size': '$focuses'
+            }
+        }
+    }, {
+        '$out': 'TotalFocus'
+    }
+]

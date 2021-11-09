@@ -1,0 +1,24 @@
+[
+    {
+        '$match': {
+            '$and': [
+                {
+                    'values.data.source': 2
+                }, {
+                    'values.data.type': 2
+                }
+            ]
+        }
+    }, {
+        '$project': {
+            'type': 'mouse click', 
+            'timestamp': '$values.timestamp', 
+            'data': {
+                'posX': '$values.data.x', 
+                'clientY': '$values.data.y'
+            }
+        }
+    }, {
+        '$out': 'MouseClick'
+    }
+]

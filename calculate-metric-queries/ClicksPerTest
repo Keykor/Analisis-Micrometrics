@@ -1,0 +1,26 @@
+[
+    {
+        '$project': {
+            'clickEvents': {
+                '$filter': {
+                    'input': '$logs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$eq': [
+                            '$$logs.type', 'mouse click'
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'testNumber': '$testNumber', 
+            'clickEventsCount': {
+                '$size': '$clickEvents'
+            }
+        }
+    }, {
+        '$out': 'ClicksPerTest'
+    }
+]

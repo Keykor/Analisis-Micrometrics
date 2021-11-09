@@ -1,0 +1,186 @@
+[
+    {
+        '$project': {
+            'logs': {
+                '$filter': {
+                    'input': '$logs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$eq': [
+                            '$$logs.type', 'mouse movement'
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        '$addFields': {
+            'nextLogs': '$logs'
+        }
+    }, {
+        '$project': {
+            'logs': {
+                '$filter': {
+                    'input': '$logs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$ne': [
+                            '$$logs', {
+                                '$arrayElemAt': [
+                                    '$logs', -1
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }, 
+            'nextLogs': {
+                '$filter': {
+                    'input': '$nextLogs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$ne': [
+                            '$$logs', {
+                                '$arrayElemAt': [
+                                    '$logs', 0
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'logs': {
+                '$map': {
+                    'input': {
+                        '$zip': {
+                            'inputs': [
+                                '$logs', '$nextLogs'
+                            ]
+                        }
+                    }, 
+                    'as': 'el', 
+                    'in': {
+                        'a': {
+                            '$arrayElemAt': [
+                                '$$el', 0
+                            ]
+                        }, 
+                        'b': {
+                            '$arrayElemAt': [
+                                '$$el', 1
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'distances': {
+                '$map': {
+                    'input': '$logs', 
+                    'as': 'el', 
+                    'in': {
+                        'distanceX': {
+                            '$abs': {
+                                '$subtract': [
+                                    '$$el.a.data.posX', '$$el.b.data.posX'
+                                ]
+                            }
+                        }, 
+                        'distanceY': {
+                            '$abs': {
+                                '$subtract': [
+                                    '$$el.a.data.clientY', '$$el.b.data.clientY'
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'distances': {
+                '$map': {
+                    'input': '$distances', 
+                    'as': 'el', 
+                    'in': {
+                        '$sqrt': {
+                            '$add': [
+                                {
+                                    '$pow': [
+                                        '$$el.distanceX', 2
+                                    ]
+                                }, {
+                                    '$pow': [
+                                        '$$el.distanceY', 2
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        '$unwind': {
+            'path': '$distances'
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'distance': {
+                '$sum': '$distances'
+            }
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'TimePerTest', 
+            'pipeline': [
+                {
+                    '$project': {
+                        '_id': '$_id', 
+                        'time': '$elapsedTime'
+                    }
+                }
+            ]
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'data': {
+                '$push': {
+                    'distance': '$distance', 
+                    'time': '$time'
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'distance': {
+                '$arrayElemAt': [
+                    '$data', 0
+                ]
+            }, 
+            'time': {
+                '$arrayElemAt': [
+                    '$data', 1
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'avgSpeed': {
+                '$divide': [
+                    '$distance.distance', '$time.time'
+                ]
+            }
+        }
+    }, {
+        '$out': 'AvgSpeedPerTest'
+    }
+]

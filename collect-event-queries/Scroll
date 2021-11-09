@@ -1,0 +1,17 @@
+[
+    {
+        '$match': {
+            'values.data.source': 3
+        }
+    }, {
+        '$project': {
+            'type': 'scrolling', 
+            'timestamp': '$values.timestamp', 
+            'data': {
+                'scrollY': '$values.data.y'
+            }
+        }
+    }, {
+        '$out': 'Scroll'
+    }
+]

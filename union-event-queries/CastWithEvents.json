@@ -1,0 +1,5 @@
+{
+    "name": "CastWithEvents",
+    "forCollection": "Screencast",
+    "dependsOf": ["Scroll", "MouseMove", "MouseClick", "Input", "Blur", "Focus"]
+}

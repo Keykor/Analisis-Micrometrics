@@ -1,0 +1,81 @@
+[
+    {
+        '$lookup': {
+            'from': 'RatedMetrics', 
+            'localField': 'screencastName', 
+            'foreignField': 'name', 
+            'as': 'level'
+        }
+    }, {
+        '$project': {
+            'screencastName': '$screencastName', 
+            'level': {
+                '$arrayElemAt': [
+                    '$level', 0
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'screencastName': '$screencastName', 
+            'level': '$level.level'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'AvgFocusDuration'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'AvgPauseDuration'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'AvgSpeedPerTest'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'ClicksPerTest'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'TimePerTest'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'TotalFocus'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'TotalPauses'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'AvgIntratecla'
+        }
+    }, {
+        '$unionWith': {
+            'coll': 'TotalBorrado'
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'data': {
+                '$push': {
+                    'name': '$screencastName', 
+                    'avgFocusDuration': '$avgFocusDuration', 
+                    'avgIntratecla': '$avgIntratecla', 
+                    'avgPauseDuration': '$avgPause', 
+                    'avgSpeedPerTest': '$avgSpeed', 
+                    'clicksPerTest': '$clickEventsCount', 
+                    'timePerTest': '$elapsedTime', 
+                    'totalBorrado': '$cantBorrado', 
+                    'totalFocus': '$totalFocus', 
+                    'totalPauses': '$totalPauses', 
+                    'level': '$level'
+                }
+            }
+        }
+    }, {
+        '$out': 'Final'
+    }
+]

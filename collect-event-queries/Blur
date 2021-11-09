@@ -1,0 +1,28 @@
+[
+    {
+        '$match': {
+            '$or': [
+                {
+                    '$and': [
+                        {
+                            'values.data.source': 2
+                        }, {
+                            'values.data.type': 6
+                        }
+                    ]
+                }, {
+                    'values.data.source': 3
+                }, {
+                    'values.data.source': 1
+                }
+            ]
+        }
+    }, {
+        '$project': {
+            'type': 'blur', 
+            'timestamp': '$values.timestamp'
+        }
+    }, {
+        '$out': 'Blur'
+    }
+]

@@ -1,0 +1,5 @@
+{
+    "name": "AvgFocusDuration",
+    "forCollection": "CastWithEvents",
+    "dependsOf": []
+}

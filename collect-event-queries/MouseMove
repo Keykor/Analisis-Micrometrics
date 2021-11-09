@@ -1,0 +1,33 @@
+[
+    {
+        '$match': {
+            'values.data.source': 1
+        }
+    }, {
+        '$project': {
+            'type': 'mouse movement', 
+            'time': '$values.timestamp', 
+            'positions': '$values.data.positions'
+        }
+    }, {
+        '$unwind': {
+            'path': '$positions', 
+            'includeArrayIndex': 'number'
+        }
+    }, {
+        '$project': {
+            '_id': {
+                'id': '$_id', 
+                'number': '$number'
+            }, 
+            'type': 'mouse movement', 
+            'timestamp': '$time', 
+            'data': {
+                'posX': '$positions.x', 
+                'clientY': '$positions.y'
+            }
+        }
+    }, {
+        '$out': 'MouseMove'
+    }
+]

@@ -1,0 +1,5 @@
+{
+    "name": "MouseClick",
+    "forCollection": "ScreencastEvent",
+    "dependsOf": []
+}

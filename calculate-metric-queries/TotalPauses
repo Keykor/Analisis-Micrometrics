@@ -1,0 +1,114 @@
+[
+    {
+        '$addFields': {
+            'nextLogs': '$logs'
+        }
+    }, {
+        '$project': {
+            'logs': {
+                '$filter': {
+                    'input': '$logs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$ne': [
+                            '$$logs', {
+                                '$arrayElemAt': [
+                                    '$logs', -1
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }, 
+            'nextLogs': {
+                '$filter': {
+                    'input': '$nextLogs', 
+                    'as': 'logs', 
+                    'cond': {
+                        '$ne': [
+                            '$$logs', {
+                                '$arrayElemAt': [
+                                    '$logs', 0
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'logs': {
+                '$map': {
+                    'input': {
+                        '$zip': {
+                            'inputs': [
+                                '$logs', '$nextLogs'
+                            ]
+                        }
+                    }, 
+                    'as': 'el', 
+                    'in': {
+                        'a': {
+                            '$arrayElemAt': [
+                                '$$el', 0
+                            ]
+                        }, 
+                        'b': {
+                            '$arrayElemAt': [
+                                '$$el', 1
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        '$project': {
+            'timeDifferences': {
+                '$map': {
+                    'input': '$logs', 
+                    'as': 'el', 
+                    'in': {
+                        'timeDiff': {
+                            '$abs': {
+                                '$subtract': [
+                                    '$$el.a.timestamp', '$$el.b.timestamp'
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        '$unwind': {
+            'path': '$timeDifferences'
+        }
+    }, {
+        '$project': {
+            'timeDiff': '$timeDifferences.timeDiff'
+        }
+    }, {
+        '$match': {
+            'timeDiff': {
+                '$gt': 2000
+            }
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'pauses': {
+                '$push': '$timeDiff'
+            }
+        }
+    }, {
+        '$project': {
+            'totalPauses': {
+                '$size': '$pauses'
+            }
+        }
+    }, {
+        '$out': 'TotalPauses'
+    }
+]

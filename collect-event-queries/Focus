@@ -1,0 +1,20 @@
+[
+    {
+        '$match': {
+            '$and': [
+                {
+                    'values.data.source': 2
+                }, {
+                    'values.data.type': 5
+                }
+            ]
+        }
+    }, {
+        '$project': {
+            'type': 'focus', 
+            'timestamp': '$values.timestamp'
+        }
+    }, {
+        '$out': 'Focus'
+    }
+]

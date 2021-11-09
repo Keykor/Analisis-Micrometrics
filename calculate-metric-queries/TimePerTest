@@ -1,0 +1,26 @@
+[
+    {
+        '$project': {
+            'firstEvent': {
+                '$arrayElemAt': [
+                    '$logs', 0
+                ]
+            }, 
+            'lastEvent': {
+                '$arrayElemAt': [
+                    '$logs', -1
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'elapsedTime': {
+                '$subtract': [
+                    '$lastEvent.timestamp', '$firstEvent.timestamp'
+                ]
+            }
+        }
+    }, {
+        '$out': 'TimePerTest'
+    }
+]

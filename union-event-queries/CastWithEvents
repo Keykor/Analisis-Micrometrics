@@ -1,0 +1,119 @@
+[
+    {
+        '$lookup': {
+            'from': 'Scroll', 
+            'localField': 'events.__id', 
+            'foreignField': '_id', 
+            'as': 'scroll'
+        }
+    }, {
+        '$lookup': {
+            'from': 'MouseMove', 
+            'localField': 'events.__id', 
+            'foreignField': '_id.id', 
+            'as': 'mouseMove'
+        }
+    }, {
+        '$lookup': {
+            'from': 'MouseClick', 
+            'localField': 'events.__id', 
+            'foreignField': '_id', 
+            'as': 'mouseClick'
+        }
+    }, {
+        '$lookup': {
+            'from': 'Input', 
+            'localField': 'events.__id', 
+            'foreignField': '_id', 
+            'as': 'input'
+        }
+    }, {
+        '$lookup': {
+            'from': 'Blur', 
+            'localField': 'events.__id', 
+            'foreignField': '_id', 
+            'as': 'blur'
+        }
+    }, {
+        '$lookup': {
+            'from': 'Focus', 
+            'localField': 'events.__id', 
+            'foreignField': '_id', 
+            'as': 'focus'
+        }
+    }, {
+        '$project': {
+            'screencastName': '$screencastName', 
+            'timestamp': '$timestamp', 
+            'scroll': '$scroll', 
+            'mouseMove': '$mouseMove', 
+            'mouseClick': '$mouseClick', 
+            'input': '$input', 
+            'blur': '$blur', 
+            'focus': '$focus'
+        }
+    }, {
+        '$match': {
+            '$or': [
+                {
+                    'scroll': {
+                        '$ne': []
+                    }
+                }, {
+                    'mouseMove': {
+                        '$ne': []
+                    }
+                }, {
+                    'mouseClick': {
+                        '$ne': []
+                    }
+                }, {
+                    'input': {
+                        '$ne': []
+                    }
+                }, {
+                    'blur': {
+                        '$ne': []
+                    }
+                }, {
+                    'focus': {
+                        '$ne': []
+                    }
+                }
+            ]
+        }
+    }, {
+        '$project': {
+            'screencastName': '$screencastName', 
+            'timestamp': '$timestamp', 
+            'logs': {
+                '$concatArrays': [
+                    '$scroll', '$mouseMove', '$mouseClick', '$input', '$blur', '$focus'
+                ]
+            }
+        }
+    }, {
+        '$unwind': {
+            'path': '$logs'
+        }
+    }, {
+        '$sort': {
+            'logs.timestamp': 1
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'screencastName': {
+                '$first': '$screencastName'
+            }, 
+            'timestamp': {
+                '$first': '$timestamp'
+            }, 
+            'logs': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$out': 'CastWithEvents'
+    }
+]
