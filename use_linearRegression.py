@@ -24,6 +24,9 @@ def generate_dataset(filename):
 
 def calculate_metrics(model, x, y):
     y_pred = model.predict(x)
+    #error absoluto medio cuanto se erra con lo predicho
+    #r2 es entre -1 y 1 -> arriba de 0.5 es bueno
+    #     
     return {
         'MAE': metrics.mean_absolute_error(y_pred,y),
         'MSE': metrics.mean_squared_error(y_pred,y),

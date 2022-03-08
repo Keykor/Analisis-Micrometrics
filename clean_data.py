@@ -15,6 +15,9 @@ def execute():
                 obj[key] = value
         dataset.append(obj)
     
+    with open("raw_logs.json","w",encoding="utf-8") as file:
+        json.dump(dataset, file)
+
     logs = []
     for elem in dataset:
         if ('avgSpeedPerTest' in elem) and (elem['avgSpeedPerTest']) and ('level' in elem) and (elem['level']):
