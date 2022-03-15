@@ -57,6 +57,10 @@
             'coll': 'TotalBorrado'
         }
     }, {
+        '$unionWith': {
+            'coll': 'AvgScrollSpeed'
+        }
+    }, {
         '$group': {
             '_id': '$_id', 
             'data': {
@@ -65,7 +69,8 @@
                     'avgFocusDuration': '$avgFocusDuration', 
                     'avgIntratecla': '$avgIntratecla', 
                     'avgPauseDuration': '$avgPause', 
-                    'avgSpeedPerTest': '$avgSpeed', 
+                    'avgSpeedPerTest': '$avgSpeed',
+                    'avgScrollSpeed': '$avgScrollSpeed', 
                     'clicksPerTest': '$clickEventsCount', 
                     'timePerTest': '$elapsedTime', 
                     'totalBorrado': '$cantBorrado', 

@@ -1,0 +1,5 @@
+{
+    "name": "AvgScrollSpeed",
+    "forCollection": "CastWithEvents",
+    "dependsOf": ["TimePerTest"]
+}

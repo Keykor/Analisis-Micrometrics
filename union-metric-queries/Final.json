@@ -1,5 +1,5 @@
 {
     "name": "Final",
     "forCollection": "CastWithEvents",
-    "dependsOf": ["RatedMetrics", "AvgFocusDuration", "AvgPauseDuration", "AvgSpeedPerTest", "ClicksPerTest", "TimePerTest", "TotalFocus", "TotalPauses", "AvgIntratecla", "TotalBorrado"]
+    "dependsOf": ["RatedMetrics", "AvgFocusDuration", "AvgPauseDuration", "AvgSpeedPerTest", "ClicksPerTest", "TimePerTest", "TotalFocus", "TotalPauses", "AvgIntratecla", "TotalBorrado", "AvgScrollSpeed"]
 }
