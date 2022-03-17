@@ -1,0 +1,51 @@
+[
+    {
+        '$project': {
+            'logs': '$logs', 
+            'first': {
+                '$arrayElemAt': [
+                    '$logs', 0
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'logs': '$logs', 
+            'firstTimestamp': '$first.timestamp'
+        }
+    }, {
+        '$unwind': {
+            'path': '$logs'
+        }
+    }, {
+        '$project': {
+            'logs': '$logs', 
+            'miliseconds': {
+                '$subtract': [
+                    '$logs.timestamp', '$firstTimestamp'
+                ]
+            }
+        }
+    }, {
+        '$match': {
+            'miliseconds': {
+                '$gte': 0
+            }
+        }
+    }, {
+        '$match': {
+            'miliseconds': {
+                '$lte': 2000
+            }
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'logs': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$out': 'TimeWindow'
+    }
+]

@@ -1,0 +1,29 @@
+[
+    {
+        '$unwind': {
+            'path': '$logs', 
+            'includeArrayIndex': 'number'
+        }
+    }, {
+        '$match': {
+            'number': {
+                '$gte': 0
+            }
+        }
+    }, {
+        '$match': {
+            'number': {
+                '$lte': 500
+            }
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'logs': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$out': 'EventWindow'
+    }
+]

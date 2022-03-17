@@ -27,6 +27,12 @@
     }, {
         '$match': {
             'percentaje': {
+                '$gte': 0
+            }
+        }
+    }, {
+        '$match': {
+            'percentaje': {
                 '$lte': 50
             }
         }
