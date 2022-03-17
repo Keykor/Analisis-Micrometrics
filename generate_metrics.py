@@ -1,7 +1,7 @@
+import queries.special_case as special_case 
+#import queries.old_training.clean_data as clean_data
 from pymongo import MongoClient
 from pathlib import Path
-import special_case
-import clean_data
 import json
 import ast
 import os
@@ -72,13 +72,13 @@ def execute_queries(mongo_client, db_name, directory_name):
 
 def main():
     client = MongoClient('localhost')
-    execute_queries(client,'metrics','collect-event-queries')
-    execute_queries(client,'metrics','union-event-queries')
-    execute_queries(client,'metrics','calculate-metric-queries')
+    execute_queries(client,'metrics','queries/collect-event-queries')
+    execute_queries(client,'metrics','queries/union-event-queries')
+    execute_queries(client,'metrics','queries/calculate-metric-queries')
     #CASO ESPECIAL DE BORRADO Y AVGINTRACARACTER
     special_case.execute()
-    execute_queries(client,'metrics','union-metric-queries')
-    clean_data.execute()
+    execute_queries(client,'metrics','queries/union-metric-queries')
+    #clean_data.execute()
     pass
 
 if __name__ == "__main__":
