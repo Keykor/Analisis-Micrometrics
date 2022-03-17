@@ -1,0 +1,71 @@
+[
+    {
+        '$project': {
+            'logs': '$logs', 
+            'cantLogs': {
+                '$size': '$logs'
+            }, 
+            'first': {
+                '$arrayElemAt': [
+                    '$logs', 0
+                ]
+            }, 
+            'last': {
+                '$arrayElemAt': [
+                    '$logs', {
+                        '$sum': [
+                            {
+                                '$size': '$logs'
+                            }, -1
+                        ]
+                    }
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'logs': '$logs', 
+            'firstTimestamp': '$first.timestamp', 
+            'lastTimestamp': '$last.timestamp', 
+            'timeDiff': {
+                '$abs': {
+                    '$subtract': [
+                        '$first.timestamp', '$last.timestamp'
+                    ]
+                }
+            }
+        }
+    }, {
+        '$unwind': {
+            'path': '$logs'
+        }
+    }, {
+        '$project': {
+            'logs': '$logs', 
+            'percentaje': {
+                '$divide': [
+                    {
+                        '$subtract': [
+                            '$logs.timestamp', '$firstTimestamp'
+                        ]
+                    }, '$timeDiff'
+                ]
+            }
+        }
+    }, {
+        '$match': {
+            'percentaje': {
+                '$lte': 50
+            }
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'logs': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$out': 'TimePercentage'
+    }
+]

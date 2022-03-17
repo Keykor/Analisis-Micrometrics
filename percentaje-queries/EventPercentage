@@ -1,0 +1,43 @@
+[
+    {
+        '$project': {
+            'logs': '$logs', 
+            'lastPosition': {
+                '$subtract': [
+                    {
+                        '$size': '$logs'
+                    }, 1
+                ]
+            }
+        }
+    }, {
+        '$unwind': {
+            'path': '$logs', 
+            'includeArrayIndex': 'position'
+        }
+    }, {
+        '$project': {
+            'logs': '$logs', 
+            'percentaje': {
+                '$divide': [
+                    '$position', '$lastPosition'
+                ]
+            }
+        }
+    }, {
+        '$match': {
+            'percentaje': {
+                '$lte': 50
+            }
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'logs': {
+                '$push': '$logs'
+            }
+        }
+    }, {
+        '$out': 'EventPercentage'
+    }
+]
