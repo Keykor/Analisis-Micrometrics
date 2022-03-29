@@ -1,5 +1,6 @@
 import queries.special_case as special_case 
 #import queries.old_training.clean_data as clean_data
+import queries.parse_data as parse_data
 from pymongo import MongoClient
 from pathlib import Path
 import json
@@ -78,7 +79,7 @@ def main():
     #CASO ESPECIAL DE BORRADO Y AVGINTRACARACTER
     special_case.execute()
     execute_queries(client,'metrics','queries/union-metric-queries')
-    #clean_data.execute()
+    parse_data.execute()
     pass
 
 if __name__ == "__main__":
