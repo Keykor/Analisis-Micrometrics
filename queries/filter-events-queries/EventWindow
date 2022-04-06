@@ -13,17 +13,28 @@
     }, {
         '$match': {
             'number': {
-                '$lte': 500
+                '$lte': 300
             }
         }
     }, {
         '$group': {
-            '_id': '$_id', 
+            '_id': {
+                '_id': '$_id', 
+                'screencastName': '$screencastName', 
+                'timestamp': '$timestamp'
+            }, 
             'logs': {
                 '$push': '$logs'
             }
         }
     }, {
-        '$out': 'EventWindow'
+        '$project': {
+            '_id': '$_id._id', 
+            'screencastName': '$_id.screencastName', 
+            'timestamp': '$_id.timestamp', 
+            'logs': '$logs'
+        }
+    }, {
+        '$out': 'CastWithEvents'
     }
 ]

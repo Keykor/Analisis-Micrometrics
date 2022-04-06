@@ -44,7 +44,6 @@ def execute_queries(mongo_client, db_name, directory_name):
     directory = os.path.join(Path().absolute(), directory_name)
 
     query_graph = {}
-    all_coll = db.list_collection_names()
 
     for filename in os.listdir(directory):
         if not filename.endswith(".json"):
@@ -71,10 +70,33 @@ def execute_queries(mongo_client, db_name, directory_name):
             print("Se corto ejecución por problema")
             break
 
+def execute_query(mongo_client, db_name, directory_name, query_name):
+    db = mongo_client[db_name]
+    directory = os.path.join(Path().absolute(), directory_name)
+
+    all_coll = db.list_collection_names()
+    with open(os.path.join(directory, query_name + ".json"), encoding="utf-8") as file:
+        query = json.load(file)
+
+        needed_coll = query['dependsOf']
+        needed_coll.append(query['forCollection'])
+        for coll in needed_coll:
+            if coll not in all_coll:
+                print("Se corto ejecución por problema")
+                return
+
+        with open (os.path.join(directory, query['name']), 'r') as fp:
+            pipeline = fp.read()
+            pipeline = ast.literal_eval(pipeline)
+            col = db[query['forCollection']]
+            col.aggregate(pipeline, allowDiskUse=True)
+
+
 def main():
     client = MongoClient('localhost')
     execute_queries(client,'metrics','queries/collect-event-queries')
     execute_queries(client,'metrics','queries/union-event-queries')
+    #execute_query(client, 'metrics','queries/filter-events-queries', 'EventWindow')
     execute_queries(client,'metrics','queries/calculate-metric-queries')
     #CASO ESPECIAL DE BORRADO Y AVGINTRACARACTER
     special_case.execute()

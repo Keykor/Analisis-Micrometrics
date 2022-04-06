@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import pandas as pd
 
-def execute():
+def execute(filename="raw_logs"):
     client = MongoClient('localhost')
     db = client['metrics']
     col = db['Final']
@@ -18,9 +18,9 @@ def execute():
                 obj[key] = value
         dataset.append(obj)
     
-    with open("raw_logs.json","w",encoding="utf-8") as file:
+    with open(filename + ".json","w",encoding="utf-8") as file:
         json.dump(dataset, file)
     
-    df = pd.read_json("raw_logs.json")
-    filepath = os.path.join(Path().absolute(), 'raw_logs.csv')
+    df = pd.read_json(filename + ".json")
+    filepath = os.path.join(Path().absolute(), filename + ".csv")
     df.to_csv(filepath)
