@@ -1,5 +1,6 @@
 {
     "name": "EventWindow",
     "forCollection": "CastWithEvents",
-    "dependsOf": []
+    "dependsOf": [],
+    "params": [0,500]
 }

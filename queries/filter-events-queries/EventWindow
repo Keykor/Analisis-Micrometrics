@@ -7,13 +7,13 @@
     }, {
         '$match': {
             'number': {
-                '$gte': 0
+                '$gte': params[0]
             }
         }
     }, {
         '$match': {
             'number': {
-                '$lte': 300
+                '$lte': params[1]
             }
         }
     }, {

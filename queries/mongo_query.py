@@ -1,12 +1,7 @@
-import queries.special_case as special_case 
-#import queries.old_training.clean_data as clean_data
-import queries.parse_data as parse_data
 from pymongo import MongoClient
-from pathlib import Path
 import json
 import ast
 import os
-
 
 def make_query(node_name, query_graph, started_queries, maked_queries, db):
     if (node_name in maked_queries):
@@ -38,10 +33,7 @@ def make_query(node_name, query_graph, started_queries, maked_queries, db):
     maked_queries.append(node_name)
     return False
 
-def execute_queries(mongo_client, db_name, directory_name):
-    db = mongo_client[db_name]
-
-    directory = os.path.join(Path().absolute(), directory_name)
+def execute_queries(db, directory):
 
     query_graph = {}
 
@@ -70,10 +62,7 @@ def execute_queries(mongo_client, db_name, directory_name):
             print("Se corto ejecución por problema")
             break
 
-def execute_query(mongo_client, db_name, directory_name, query_name):
-    db = mongo_client[db_name]
-    directory = os.path.join(Path().absolute(), directory_name)
-
+def execute_query(db, directory, query_name, params=None):
     all_coll = db.list_collection_names()
     with open(os.path.join(directory, query_name + ".json"), encoding="utf-8") as file:
         query = json.load(file)
@@ -87,22 +76,14 @@ def execute_query(mongo_client, db_name, directory_name, query_name):
 
         with open (os.path.join(directory, query['name']), 'r') as fp:
             pipeline = fp.read()
+
+            if (not params):
+                params = query['params']
+
+            for idx,param in enumerate(params):
+                val = "params[" + str(idx) + "]"
+                pipeline = pipeline.replace(val, str(param))
+
             pipeline = ast.literal_eval(pipeline)
             col = db[query['forCollection']]
             col.aggregate(pipeline, allowDiskUse=True)
-
-
-def main():
-    client = MongoClient('localhost')
-    execute_queries(client,'metrics','queries/collect-event-queries')
-    execute_queries(client,'metrics','queries/union-event-queries')
-    #execute_query(client, 'metrics','queries/filter-events-queries', 'EventWindow')
-    execute_queries(client,'metrics','queries/calculate-metric-queries')
-    #CASO ESPECIAL DE BORRADO Y AVGINTRACARACTER
-    special_case.execute()
-    execute_queries(client,'metrics','queries/union-metric-queries')
-    parse_data.execute()
-    pass
-
-if __name__ == "__main__":
-    main()
