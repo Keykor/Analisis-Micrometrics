@@ -1,10 +1,8 @@
 from pymongo import MongoClient
 import json 
-import os
-from pathlib import Path
 import pandas as pd
 
-def execute(filename="raw_logs"):
+def execute(file_path, save_csv=False, save_json=False):
     client = MongoClient('localhost')
     db = client['metrics']
     col = db['Final']
@@ -18,9 +16,10 @@ def execute(filename="raw_logs"):
                 obj[key] = value
         dataset.append(obj)
     
-    with open(filename + ".json","w",encoding="utf-8") as file:
-        json.dump(dataset, file)
-    
-    df = pd.read_json(filename + ".json")
-    filepath = os.path.join(Path().absolute(), filename + ".csv")
-    df.to_csv(filepath)
+    if (save_json):
+        with open(file_path + ".json","w",encoding="utf-8") as file:
+            json.dump(dataset, file)
+
+    if (save_csv):
+        df = pd.read_json(json.dumps(dataset))
+        df.to_csv(file_path + ".csv")
