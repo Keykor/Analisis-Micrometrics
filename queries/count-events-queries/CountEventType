@@ -1,0 +1,39 @@
+[
+    {
+        '$unwind': {
+            'path': '$logs'
+        }
+    }, {
+        '$group': {
+            '_id': {
+                '_id': '$_id', 
+                'screencastName': '$screencastName', 
+                'type': '$logs.type'
+            }, 
+            'total': {
+                '$sum': 1
+            }
+        }
+    }, {
+        '$group': {
+            '_id': {
+                '_id': '$_id._id', 
+                'screencastName': '$_id.screencastName'
+            }, 
+            'count': {
+                '$push': {
+                    'type': '$_id.type', 
+                    'total': '$total'
+                }
+            }
+        }
+    }, {
+        '$project': {
+            '_id': '$_id._id', 
+            'screencastName': '$_id.screencastName', 
+            'count': '$count'
+        }
+    }, {
+        '$out': 'counts'
+    }
+]

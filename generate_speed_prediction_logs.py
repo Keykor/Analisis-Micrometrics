@@ -7,13 +7,14 @@ import os
 
 def main():
     client = MongoClient('localhost')
-    for i in range(100,200,100):
+    for i in range(100,2100,100):
         names=['queries/collect-event-queries',
                 'queries/union-event-queries',
                 'queries/filter-events-queries',
                 'queries/calculate-metric-queries',
                 'special_case',
-                'queries/union-metric-queries']
+                'queries/union-metric-queries',
+                'queries/count-events-queries']
 
         for name in names:
             if (name == 'special_case'):
@@ -28,9 +29,10 @@ def main():
                 continue
             
             mongo_query.execute_queries(client['metrics'],directory_path)
-
+    
         directory_path = os.path.join(Path().absolute(), 'speed-prediction/speed-prediction-logs/' + str(i))
-        parse_data.execute(directory_path,save_csv=True)
+        parse_data.final_collection(directory_path,save_csv=True)
+        parse_data.counts_collection(directory_path + "-counts",save_csv=True)
     pass
 
 if __name__ == "__main__":
