@@ -1,5 +1,6 @@
 {
     "name": "EventPercentage",
     "forCollection": "CastWithEvents",
-    "dependsOf": []
+    "dependsOf": [],
+    "params": [0,50]
 }

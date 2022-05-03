@@ -1,6 +1,11 @@
 [
     {
         '$project': {
+            '_id': {
+                '_id': '$_id', 
+                'screencastName': '$screencastName', 
+                'timestamp': '$timestamp'
+            }, 
             'logs': '$logs', 
             'first': {
                 '$arrayElemAt': [
@@ -29,13 +34,13 @@
     }, {
         '$match': {
             'miliseconds': {
-                '$gte': 0
+                '$gte': params[0]
             }
         }
     }, {
         '$match': {
             'miliseconds': {
-                '$lte': 2000
+                '$lte': params[1]
             }
         }
     }, {
@@ -46,6 +51,13 @@
             }
         }
     }, {
-        '$out': 'TimeWindow'
+        '$project': {
+            '_id': '$_id._id', 
+            'screencastName': '$_id.screencastName', 
+            'timestamp': '$_id.timestamp', 
+            'logs': '$logs'
+        }
+    }, {
+        '$out': 'CastWithEvents'
     }
 ]

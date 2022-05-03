@@ -1,6 +1,11 @@
 [
     {
         '$project': {
+            '_id': {
+                '_id': '$_id', 
+                'screencastName': '$screencastName', 
+                'timestamp': '$timestamp'
+            }, 
             'logs': '$logs', 
             'cantLogs': {
                 '$size': '$logs'
@@ -42,7 +47,7 @@
     }, {
         '$project': {
             'logs': '$logs', 
-            'percentaje': {
+            'percentage': {
                 '$divide': [
                     {
                         '$subtract': [
@@ -54,14 +59,14 @@
         }
     }, {
         '$match': {
-            'percentaje': {
-                '$gte': 0
+            'percentage': {
+                '$gte': params[0]
             }
         }
     }, {
         '$match': {
-            'percentaje': {
-                '$lte': 50
+            'percentage': {
+                '$lte': params[1]
             }
         }
     }, {
@@ -72,6 +77,13 @@
             }
         }
     }, {
-        '$out': 'TimePercentage'
+        '$project': {
+            '_id': '$_id._id', 
+            'screencastName': '$_id.screencastName', 
+            'timestamp': '$_id.timestamp', 
+            'logs': '$logs'
+        }
+    }, {
+        '$out': 'CastWithEvents'
     }
 ]

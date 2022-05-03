@@ -1,5 +1,6 @@
 {
     "name": "TimeWindow",
     "forCollection": "CastWithEvents",
-    "dependsOf": []
+    "dependsOf": [],
+    "params": [0,2000]
 }
