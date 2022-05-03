@@ -5,9 +5,9 @@ from pymongo import MongoClient
 from pathlib import Path
 import os
 
-def main():
+def main(filterName, range_start, range_end, range_step):
     client = MongoClient('localhost')
-    for i in range(100,2100,100):
+    for i in range(range_start,range_end,range_step):
         names=['queries/collect-event-queries',
                 'queries/union-event-queries',
                 'queries/filter-events-queries',
@@ -25,15 +25,22 @@ def main():
             directory_path = os.path.join(Path().absolute(), name)
 
             if (name == 'queries/filter-events-queries'):
-                mongo_query.execute_query(client['metrics'],directory_path, 'EventWindow', [0,i])
+                mongo_query.execute_query(client['metrics'],directory_path, filterName, [0,i])
                 continue
             
             mongo_query.execute_queries(client['metrics'],directory_path)
     
-        directory_path = os.path.join(Path().absolute(), 'speed-prediction/speed-prediction-logs/' + str(i))
+        directory_path = os.path.join(Path().absolute(), 'speed-prediction/speed-prediction-logs/' + filterName + '/' + str(i))
         parse_data.final_collection(directory_path,save_csv=True)
         parse_data.counts_collection(directory_path + "-counts",save_csv=True)
     pass
 
 if __name__ == "__main__":
-    main()
+    print("TimeWindow Logs")
+    main('TimeWindow',1000,121000,5000)
+    print("EventWindow Logs")
+    main('EventWindow',100,2100,100)
+    print("TimePercentage Logs")
+    main('TimePercentage',25,125,25)
+    print("EventPercentage Logs")
+    main('EventPercentage',25,125,25)
