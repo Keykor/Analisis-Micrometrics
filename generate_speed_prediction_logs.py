@@ -8,6 +8,7 @@ import os
 def main(filterName, range_start, range_end, range_step):
     client = MongoClient('localhost')
     for i in range(range_start,range_end,range_step):
+        print(filterName + " hasta " + str(i))
         names=['queries/collect-event-queries',
                 'queries/union-event-queries',
                 'queries/filter-events-queries',
@@ -37,7 +38,7 @@ def main(filterName, range_start, range_end, range_step):
 
 if __name__ == "__main__":
     print("TimeWindow Logs")
-    main('TimeWindow',1000,121000,5000)
+    main('TimeWindow',5000,121000,5000)
     print("EventWindow Logs")
     main('EventWindow',100,2100,100)
     print("TimePercentage Logs")

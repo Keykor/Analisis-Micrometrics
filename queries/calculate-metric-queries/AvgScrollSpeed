@@ -144,9 +144,19 @@
     }, {
         '$project': {
             'avgScrollSpeed': {
-                '$divide': [
-                    '$distance.distance', '$time.time'
-                ]
+                '$cond': {
+                    'if': {
+                        '$ne': [
+                            '$time.time', 0
+                        ]
+                    }, 
+                    'then': {
+                        '$divide': [
+                            '$distance.distance', '$time.time'
+                        ]
+                    }, 
+                    'else': None
+                }
             }
         }
     }, {
